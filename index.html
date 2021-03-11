@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="https://images.squarespace-cdn.com/content/v1/5af21e3c25bf02e7690fb9fe/1528238783930-JBOT1HNO9W1K8ODCKZUU/ke17ZwdGBToddI8pDm48kP06O0_IHyRXSOOiqwgWaApZw-zPPgdn4jUwVcJE1ZvWEtT5uBSRWt4vQZAgTJucoTqqXjS3CfNDSuuf31e0tVEsL0EX72Q6S7TgfQYQBQpkz5xM6Qt8VXd_xJGg_ziCFib8BodarTVrzIWCp72ioWw/favicon.ico?format=100w"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Blues</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <header>
+          <h1>TROPICAL HOUSE MUSIC</h1>
+          <p>
+            You have to believe your life is completely in your control, your
+            past doesnt matter, and that you are capable of anything. You have
+            to lie because your old interpretation of the world isnt working.
+            Its time to try something different. Being self sufficient is true
+            freedom.
+          </p>
+
+          <nav>
+            <ul class="left">
+              <li><a href="#">Recently added</a></li>
+              <li><a href="#">Top Pop </a></li>
+              <li><a href="#">Best Of The Year</a></li>
+              <li><a href="#">Highly Recommended</a></li>
+            </ul>
+            <ul class="right">
+              <li><a href="#">About</a></li>
+              <li><a href="#">Request</a></li>
+              <li><a href="#">Contact</a></li>
+              <li class="autoplay_btn">
+                <a href="#">
+                  <label>
+                    <h5>AUTOPLAY</h5>
+                    <input type="checkbox" />
+                    <span></span>
+                  </label>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <div class="body_content">
+          <div class="title">
+            <span></span>
+            <span>TITLE</span>
+            <span>ARTIST</span>
+            <span>GENRE</span>
+            <span>DURATION</span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="list"></div>
+        </div>
+      </div>
+    </div>
+
+   
+
+    <!--JQUERY CDN LINK-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+      $(document).ready(function(){
+        let list = $(".list");
+        let list_block;
+
+        for (let key in song_list) {
+            list_block = $('<div class="list_block"></div>');
+            list.append(list_block);
+
+            list_block.append('<span class="play_btn"><img class="play_icon"\
+            src="imgz/play.svg"><img class="pause_icon" src="imgz/pause.\
+            svg.png"></span>');
+            list_block.append('<span class="song_title">'+ song_list[key].title
+            + '</span>');
+            list_block.append('<span class="song_artist">'+ song_list[key].artist
+            + '</span>');
+            list_block.append('<span class="song_genre">'+ song_list[key].genre
+            + '</span>');
+            list_block.append('<span class="song_duration">'+ song_list[key].duration
+            + '</span>');
+            list_block.append('<span class="beat_animation"> <ul><li></li><li></li><li></li><li></li><li></li>\
+            <li></li><li></li><li></li><li></li><li></li></ul></span>');
+            list_block.append('<span class="track"><audio controls id="audio"><source src="ziki/'+ song_list[key].track +'" type="audio/mp3">\
+            </audio></span>');
+            list_block.append('<span class="download_btn"><a target="_blank" href="ziki/'+ song_list[key].track +'" >\
+            <img class="downlod" src="imgz/download.png"></a></span>');
+          }
+
+          //PLAY FUNCTIONALITY
+          $(".list_block .play_btn .play_icon").on('click',function(current){
+
+            $(this).parent().find(".play_icon").css("display","none");
+            $(this).parent().find(".pause_icon").css("display","inline-block");
+            $(".play_icon").not(this).parent().find(".pause_icon").css("display","none")
+            $(".play_icon").not(this).parent().find(".play_icon").css("display","inline-block")
+            
+            //ADD/REMOVE CLASS
+            $(this).parent().parent().addClass("isPlaying");
+            $(".play_icon").not(this).parent().parent().removeClass("isPlaying");
+          
+          //BEAT ANIMATION PLAY
+          $(this).parent().parent().find(".beat_animation li").css("animation-play-state","running").
+          css("opacity","1");
+          $(".play_icon").not(this).parent().parent().find(".beat_animation li").css("animation-play-state","paused").
+          css("opacity","1");
+
+
+          //PAUSE CURRENT AUDIO TRACK WHEN PLAY NEXT/PREV AUDIO TRACK
+          $("audio").each(function(e){
+            if(e !== current.currentTarget){
+              $(this)[0].pause();
+            }
+            
+          }); 
+          
+          //PLAY CURRENT AUDIO TRACK
+          $(this).parent().parent().find(".track audio")[0].play();
+          
+          
+          });
+
+          //PAUSE FUNCTIONALITY
+          $(".list_block .play_btn .pause_icon").on('click',function(){
+
+            //HIDE PAUSE ICON
+            $(this).parent().find(".pause_icon").css("display","none");
+
+            //SHOW PLAY ICON
+            $(this).parent().find(".play_icon").css("display","inline-block");
+
+            //BEAT ANIMATION PAUSE
+            $(this).parent().parent().find(".beat_animation li").css("animation-play-state","paused");
+
+            //PAUSE CURRENT AUDIO TRACK
+            $(this).parent().parent().find(".track audio")[0].pause();
+
+
+
+       });
+
+        //AUTOPLAY FUNCTIONALITY
+        $(".autoplay_btn input").on('change',function(){
+          if($(this).is(":checked")){
+            $("audio").on('ended', function(){
+
+              $(this).parent().parent().next().find("audio")[0].play();
+
+              $(".list_block").removeClass("isPlaying");
+              $(this).parent().parent().next().addClass("isPlaying"); 
+              $(this).parent().parent().next().find(".beat_animation li").css("animation-play-state","running").
+               css(" opacity","1");
+
+
+              $(this).parent().parent().next().find(".play_icon").css("display","none");
+              $(this).parent().parent().next().find(".pause_icon").css("display","inline-block");
+
+            });
+          }
+          else{
+
+            $("audio").on('ended', function(){
+              $(".beat_animation li").css("animation-play-state","paused").css(" opacity","1");
+              $("pause_icon").css("display","none");
+              $("play_icon").css("display","inline-block");
+               
+
+            });
+
+          }
+
+        }).change();
+      
+      
+
+
+      });
+    </script>
+
+
+                 <span></span>
+  </body>
+
+  <!--  -->
+</html>
